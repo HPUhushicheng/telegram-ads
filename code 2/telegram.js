@@ -2,13 +2,12 @@ const fs = require('fs');
 const axios = require('axios');
 const readline = require('readline');
 
-// 创建 readline 接口
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-// ASCII 字符画
+
 const banner = `
   ____        _____      _                                     
  |  _ \\   ___|_   _|___ | |  ___   __ _  _ __  __ _  _ __ ___  
@@ -20,20 +19,20 @@ const banner = `
 
 console.log(banner);
 
-// 读取txt文件中的网址
+
 const urls = fs.readFileSync('site.txt', 'utf-8').split('\n').map(url => url.trim());
 
-// 定义文件路径
+
 const validUrlsFile = 'valid_urls.txt';
 const invalidUrlsFile = 'invalid_urls.txt';
 const allResponsesFile = 'all_responses.txt';
 
-// 清空文件内容
+
 fs.writeFileSync(validUrlsFile, '');
 fs.writeFileSync(invalidUrlsFile, '');
 fs.writeFileSync(allResponsesFile, '');
 
-// 定义一个函数来处理每个网址
+
 async function checkUrl(url) {
   const data = new URLSearchParams();
   data.append('query', url);
@@ -64,7 +63,7 @@ async function checkUrl(url) {
       data: data.toString()
     });
 
-    // 保存返回数据到总文件
+   
     fs.appendFileSync(allResponsesFile, JSON.stringify(response.data) + '\n');
 
     if (response.data.ok) {
@@ -80,12 +79,12 @@ async function checkUrl(url) {
   }
 }
 
-// 定义一个异步函数来逐个处理网址
+
 async function processUrls(title, text, promoteUrl) {
   console.log('开始处理...');
   for (const url of urls) {
     await checkUrl(url);
-    // 每次请求后等待2秒
+
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
   console.log('处理完成！');
@@ -93,21 +92,22 @@ async function processUrls(title, text, promoteUrl) {
   console.log(`异常网址保存在: ${invalidUrlsFile}`);
   console.log(`所有返回数据保存在: ${allResponsesFile}`);
 
-  // 提交广告
+ 
   await submitAd(title, text, promoteUrl);
   rl.close();
 }
 
-// 提交广告请求
+
 async function submitAd(title, text, promoteUrl) {
-  // 读取所有返回数据
+
   const allResponses = fs.readFileSync(allResponsesFile, 'utf-8').split('\n').filter(line => line.trim() !== '');
 
-  // 提取正常网址的ID并去重
-  const channelIds = Array.from(new Set(allResponses.map(response => {
+
+const channelIds = Array.from(new Set(allResponses.map(response => {
     try {
       const data = JSON.parse(response);
-      if (data.ok && data.channel && data.channel.id) {
+
+      if (data.ok && data.channel && data.channel.id && data.channel.title !== "韩国数据流") {
         return data.channel.id;
       }
     } catch (error) {
@@ -116,7 +116,6 @@ async function submitAd(title, text, promoteUrl) {
     return null;
   }).filter(id => id !== null)));
 
-  // 将ID组合成字符串
   const channelsParam = channelIds.join(';');
 
   const data = new URLSearchParams();
@@ -171,7 +170,6 @@ async function submitAd(title, text, promoteUrl) {
   }
 }
 
-// 启动 CLI
 rl.question('请输入广告标题: ', (title) => {
   rl.question('请输入广告文本: ', (text) => {
     rl.question('请输入推广网址: ', (promoteUrl) => {
