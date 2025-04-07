@@ -20,7 +20,7 @@ git clone https://github.com/HPUhushicheng/telegram-ads.git
 ```
 # 进入项目目录
 ```
-cd telegram-ads/code-2
+cd telegram-ads/code 2
 ```
 # 安装项目依赖
 ```
@@ -28,7 +28,11 @@ pnpm install
 ```
 # 运行项目
 ```
-pnpm run dev
+双击 run_telegram.bat 即可
+
+注意当前网络环境，是否可以正常连接到 tg 服务器，可以使用 test_lianjie_tg.bat 测试,双击
+
+如果出现请求超时无法连接或运行失败，再联系我
 ```
 # 贡献指南
 1. Fork 本仓库。
